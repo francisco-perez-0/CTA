@@ -5,15 +5,23 @@
 #include <math.h>
 #include <mcp2515.h>
 
+
+int pins[6] = {A0, A1, A2, A3, A4, A5};
+
 int i=0;
 
 int xin=0; // Lectura del ADC
 
 int estado=0; // Pin digital
 
+int reads [6];
+
 int read2=0;
 int read3=0;
 int read4=0;
+int read5=0;
+int read6=0;
+int read7=0;
 
 int arregloLecturas[3];
 
@@ -25,6 +33,7 @@ double xread=0;
 
 double temp = 0;
 
+int led = HIGH;
 
 double A = 0.001112386014;
 double B = 0.0002400476586;
@@ -51,10 +60,11 @@ void setup() {
   pinMode (A0, INPUT);
   pinMode (A1, INPUT);
   pinMode (A2, INPUT);
+  pinMode (A3, INPUT);
+  pinMode (A4, INPUT);
+  pinMode (A5, INPUT);
 
-  pinMode (5, OUTPUT);
-  pinMode (6, OUTPUT);
-  pinMode (7, INPUT);
+  pinMode(3, OUTPUT);
   //analogReference(EXTERNAL);
 
   Serial.begin(9600);
@@ -62,15 +72,14 @@ void setup() {
 
   //**********************************
   trama1.can_id = 550; 
-  trama1.can_dlc = 8;
+  trama1.can_dlc = 6;
   trama1.data[0] = 0x1E;
   trama1.data[1] = 0x28;
   trama1.data[2] = 0x32;
   trama1.data[3] = 0x3C;
   trama1.data[4] = 0x46;
   trama1.data[5] = 0x50;
-  trama1.data[6] = 0x5A;
-  trama1.data[7] = 0x64;
+
 
 
   mcp2515.reset();
@@ -84,37 +93,39 @@ void setup() {
 
 void loop() {
 
+  led = !led;
+  digitalWrite(3, led);
+
+
 ///////////////////Inicio de Conversión de valor////////////////////////////
-temperaturasAux = 0;
-xin=analogRead(A0);
-read1 = steinh (xin); 
-read2 = (int)read1;
-
-arregloLecturas[0] = read2;
-
-xin=analogRead(A1);
-read1 = steinh (xin);
-read3 = (int)read1;
-
-arregloLecturas[1] = read3;
-
-xin=analogRead(A4);
-read1 = steinh (xin);
-read4 = (int)read1;
-
-arregloLecturas[2] = read4;
-
-Serial.println();
-SortAsc(arregloLecturas);
-
-for(i=0;i<3;i++){
-    Serial.print(arregloLecturas[i]);
-    Serial.print(" - ");
+for(int i=0; i<6; i++){
+  xin = analogRead(pins[i]);
+  reads[i]= (int)steinh(xin);
+  Serial.print("| Pin: ");
+  Serial.print(pins[i]);
+  Serial.print(" valor leido: ");
+  Serial.print(reads[i]);
+  Serial.print(" | ----- ");
 }
+/////////////////////Fin de Conversión de valor/////////////////////////////
+  trama1.data[0] = reads[0];
+  trama1.data[1] = reads[1];
+  trama1.data[2] = reads[2];
+  trama1.data[3] = reads[3];
+  trama1.data[4] = reads[4];
+  trama1.data[5] = reads[5];
+  //***************************
+   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
+   else Serial.println("Msg1 TX error");
+  //**************************
+
+  Serial.println();
+
+/*
 Serial.println();
 Serial.print("La mediana es: ");
 Serial.println(arregloLecturas[1]);
-
+*/
   /*Serial.print("El valor de punto flotante es: ");
   Serial.println(read1);
   Serial.print("El valor entero sin decimales de A0 es: ");
@@ -127,46 +138,20 @@ Serial.println(arregloLecturas[1]);
   Serial.print("El estado del pin 7 es: ");
   Serial.println(estado);*/
 
-if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
-    if(canMsg.can_id == 0x123){
-      Serial.println("Mensaje recibido");
-      Serial.print(canMsg.can_id, HEX); // print ID
-      Serial.print(" "); 
-      Serial.print(canMsg.can_dlc, HEX); // print DLC
-      Serial.print(" ");
-    
-      for (int i = 0; i<canMsg.can_dlc; i++)  {  // print the data
-        Serial.print(canMsg.data[i],HEX);
+  if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
+      if(canMsg.can_id == 0x123){
+        Serial.println("Mensaje recibido");
+        Serial.print(canMsg.can_id, HEX); // print ID
+        Serial.print(" "); 
+        Serial.print(canMsg.can_dlc, HEX); // print DLC
         Serial.print(" ");
+        for (int i = 0; i<canMsg.can_dlc; i++)  {  // print the data
+          Serial.print(canMsg.data[i],HEX);
+          Serial.print(" ");
+        }
+        Serial.println();      
       }
-      Serial.println();      
     }
-  }
-  /////////////////////Fin de Conversión de valor/////////////////////////////
-  if(temperaturasAux> 30){
-    digitalWrite(5, LOW);
-    digitalWrite(6, HIGH);
-  }
-  if(temperaturasAux < 30){
-    digitalWrite(6, LOW);
-  }
-  
-  estado = digitalRead(7);
-
-  trama1.data[0] = 0x0;
-  trama1.data[1] = 0x0;
-  trama1.data[2] = 0x0;
-  trama1.data[3] = arregloLecturas[1];
-  trama1.data[4] = 0x0;
-  trama1.data[5] = 0x0;
-  trama1.data[6] = 0x0;
-  trama1.data[7] = 0x0;
-  //***************************
-   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else Serial.println("Msg1 TX error");
-  //**************************
-  temperaturasAux = 0;
-
    
   delay (1000);
   
