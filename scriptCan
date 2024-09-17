@@ -1,0 +1,5 @@
+sudo modprobe can
+sudo modprobe can_raw
+sudo modprobe slcan
+sudo slcand -o -c -f -s5 /dev/ttyUSB* can0
+sudo ip link set up can0

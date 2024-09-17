@@ -1,73 +1,87 @@
 #include <mcp2515.h>
+#include <EEPROM.h>
 
-#define RELAY1 6
-#define RELAY2 7
-#define RELAY3 8
+#define RELAY1 7
+#define RELAY2 8
+#define RELAY3 9
+
+#define pinCorriente A0
+#define pinTension A1
+
+#define sensibilidad 0.0125
+#define Vref 5
+#define Vcero 2.5
+
+
+const unsigned long interval = 1000; 
+unsigned long previousMillis = 0;    
 
 MCP2515 mcp2515(10);
 struct can_frame trama1;
+struct can_frame tramaCorriente;
+struct can_frame tramaTension;
 struct can_frame canMsg;
 
 int i=0;
 
-int xin=0; // Lectura del ADC
 
 int estado=0; // Pin digital
+
+int led = HIGH;
 
 int read2=0;
 int read3=0;
 int read4=0;
+
 double read1=0;
 
-
-int arregloLecturas[3];
-
-int temperaturasAux = 0;
-///////////////////////////// Valores para la Ecuación///////////////////////
-double xread=0; 
-
-double temp = 0;
+int tension;
+int parteEnteraT;
+int parteFlotanteT;
+float convTension = 0;
 
 
-double A = 0.001112386014;
-double B = 0.0002400476586;
-double C = 0.0000000393051678;
+int corriente;
+int parteEnteraC;
+int parteFlotanteC;
+float convCorriente = 0;
 
-double logres=9.210340372;
 
-double power = 1; // auxiliar potencia
+int flag = 0;
+int val;
 
-double logrest=0;
+int estadoRelayUno;
+int estadoRelayDos;
+int estadoRelayTres;
 
-double logtem=0;
 
 void setup() {
 
-pinMode (A0, INPUT);
-pinMode (A1, INPUT);
-pinMode (A2, INPUT);
+  pinMode (pinCorriente, INPUT);
+  pinMode (pinTension, INPUT);
   // put your setup code here, to run once:
-  pinMode(4, INPUT);
-  pinMode(5, INPUT);
-  pinMode(9, INPUT);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-  pinMode(8, OUTPUT);
+  estadoRelayUno = EEPROM.read(estadoRelayUno);
+  estadoRelayDos = EEPROM.read(estadoRelayDos);
+  estadoRelayTres = EEPROM.read(estadoRelayTres);
+  pinMode(3, OUTPUT);
+  pinMode(RELAY1, OUTPUT);
+  pinMode(RELAY2, OUTPUT);
+  pinMode(RELAY3, OUTPUT);
   Serial.begin(9600);
-  digitalWrite(6, LOW);
-  digitalWrite(7, LOW);
-  digitalWrite(8, LOW);
+  //digitalWrite(7, LOW);
+  //digitalWrite(8, LOW);
+  //digitalWrite(9, LOW);
 
-  trama1.can_id = 550; 
-  trama1.can_dlc = 8;
-  trama1.data[0] = 0x1E;
-  trama1.data[1] = 0x28;
-  trama1.data[2] = 0x32;
-  trama1.data[3] = 0x3C;
-  trama1.data[4] = 0x46;
-  trama1.data[5] = 0x50;
-  trama1.data[6] = 0x5A;
-  trama1.data[7] = 0x64;
+  tramaCorriente.can_id = 880; 
+  tramaCorriente.can_dlc = 2;
+  tramaCorriente.data[0] = 0x00;
+  tramaCorriente.data[1] = 0x00;
+
+  tramaTension.can_id = 890; 
+  tramaTension.can_dlc = 2;
+  tramaTension.data[0] = 0x00;
+  tramaTension.data[1] = 0x00;
+
 
   mcp2515.reset();
   mcp2515.setBitrate(CAN_250KBPS, MCP_8MHZ);
@@ -76,45 +90,67 @@ pinMode (A2, INPUT);
 }
 
 void loop() {
-  temperaturasAux = 0;
-xin=analogRead(A0);
-read1 = steinh (xin); 
-read2 = (int)read1;
-
-arregloLecturas[0] = read2;
-
-xin=analogRead(A1);
-read1 = steinh (xin);
-read3 = (int)read1;
-
-arregloLecturas[1] = read3;
-
-xin=analogRead(A4);
-read1 = steinh (xin);
-read4 = (int)read1;
-
-arregloLecturas[2] = read4;
-
-
-SortAsc(arregloLecturas);
-/*for(i=0;i<3;i++){
-    Serial.print(arregloLecturas[i]);
-    Serial.print(" - ");
-}*/
-  int flag = 0;
-  int val;
-  /*val = analogRead(A0);  
-    Serial.print("Estado potenciometro - "); 
-    Serial.println(val);
-  Serial.print("Estado pin 4 - ");
+  uint32_t t = millis();
+  if(i++ == 200){ //1 sg
+    led = !led;
+    i=0;
+    digitalWrite(3, led);
+    Serial.print("Estado corriente - "); 
+    Serial.print(corriente);
+    Serial.print(" | ");
+    Serial.print("Estado tension - "); 
+    Serial.println(tension);
+    /*
+    Serial.print("Estado pin 4 - ");
     val = digitalRead(4);
     Serial.println(val);
 
-    Serial.print("Estado pin 9 - ");
-    val = digitalRead(9);
+    Serial.print("Estado pin 5 - ");
+    val = digitalRead(5);
     Serial.println(val);
-    delay(1000);*/
-  // put your main code here, to run repeatedly:
+
+    Serial.print("Estado pin 6 - ");
+    val = digitalRead(6);
+    Serial.println(val);
+    */
+    Serial.print("Conversion corriente ");
+    Serial.print(parteEnteraC);
+    Serial.print(" , ");
+    Serial.print(parteFlotanteC);
+    Serial.println();
+  }
+  // ------------------- Corriente -------------------
+  corriente = analogRead(A0);
+  /*float corrienteAux = ((corriente*Vref)/1023); 
+  convCorriente = funcionConversionCorriente(corrienteAux);
+  */
+  parteEnteraC = (int)convCorriente;
+  parteFlotanteC = (int)((convCorriente - parteEnteraC)*100);
+  // ------------------- Tension -------------------
+  tension = analogRead(A1); 
+  convCorriente = mapFloat(corriente, 0, 1023, 0, 50);
+
+  convTension = mapFloat(tension, 0, 1023, 0, 100);
+  parteEnteraT = (int)convTension;
+  parteFlotanteC = (int)((convTension - parteEnteraT)*100);
+
+  //Envio trama de corriente
+  tramaCorriente.data[0] = parteEnteraC;
+  tramaCorriente.data[1] = parteFlotanteC;
+  //***************************
+  if (mcp2515.sendMessage(&tramaCorriente) == MCP2515::ERROR_OK);
+  else Serial.println("MsgCorriente TX error");
+  //**************************
+
+   //Envio trama de tension
+  tramaTension.data[0] = parteEnteraT;
+  tramaTension.data[1] = parteFlotanteT;
+  //***************************
+  if (mcp2515.sendMessage(&tramaTension) == MCP2515::ERROR_OK);
+  else Serial.println("MsgTension TX error");
+  //**************************
+
+  //Recibo de tramas de control 
   if (mcp2515.readMessage(&trama1) == MCP2515::ERROR_OK) {
     if(trama1.can_id == 0x123){
       Serial.println("Mensaje recibido");
@@ -124,23 +160,29 @@ SortAsc(arregloLecturas);
       Serial.print(" ");
       switch (trama1.data[0]){
         case 0x00:
-          digitalWrite(6, LOW);
+          digitalWrite(RELAY1, LOW);
+          EEPROM.write(estadoRelayUno, 0);
           break;
         case 0x11:
-          digitalWrite(6, HIGH);
+          digitalWrite(RELAY1, HIGH);
+          EEPROM.write(estadoRelayUno, 1);
           break;
         case 0x22:
-          digitalWrite(7, LOW);
+          digitalWrite(RELAY2 , LOW);
+          EEPROM.write(estadoRelayDos, 0);
           break;
         case 0x33:
-          digitalWrite(7, HIGH);
+          digitalWrite(RELAY2, HIGH);
+          EEPROM.write(estadoRelayDos, 1);
           break;
         
       }
       if(trama1.data[0] == 0x44){
-        digitalWrite(8, LOW);
+        digitalWrite(RELAY3, LOW);
+        EEPROM.write(estadoRelayTres, 0);
       } else if(trama1.data[0] == 0x55){
-        digitalWrite(8, HIGH);
+        digitalWrite(RELAY3, HIGH);
+        EEPROM.write(estadoRelayTres, 1);
       }
       for (int i = 0; i<trama1.can_dlc; i++)  {  // print the data
         Serial.print(trama1.data[i],HEX);
@@ -149,56 +191,17 @@ SortAsc(arregloLecturas);
       Serial.println();      
     }
   }
-  trama1.data[0] = 0x0;
-  trama1.data[1] = 0x0;
-  trama1.data[2] = 0x0;
-  trama1.data[3] = 0x0;
-  trama1.data[4] = arregloLecturas[1];
-  trama1.data[5] = 0x0;
-  trama1.data[6] = 0x0;
-  trama1.data[7] = 0x0;
-  //***************************
-   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else Serial.println("Msg1 TX error");
-  //**************************
-  temperaturasAux = 0;
-  delay(1000);
+
+  
+  delay(5);
 }
 
 
-double steinh (int adc){
-  xread= (1024.0f/adc)-1;
-
-  logrest =-log(xread)+logres;
-  /////////////////////////Steinhart-Hart//////////////////////////////////////
-
-    power =1;
-    for(i=0;i<3;i++){
-      power= power*logrest;
-    }
-
-  temp = A + B*logrest + C*power;
-  temp = 1.0f/temp;
-  temp = temp - 273.15f;
-   /////////////////////////Fin Steinhar-Hart//////////////////////////////////
-  return temp;
+float funcionConversionCorriente(float entrada){
+  return ((entrada - 2.5)/0.0125);
 }
 
-//////////////////////////Ordenamiento ascendente/////////////////////////////
-void SortAsc(int* arr){
-  int aux;
-    //Comparo si el primer numero es mayor al segundo y luego si el segundo es mayor al tercero
-    for(i=0;i<2;i++){
-      if(arr[i] > arr[i+1]){
-      aux=arr[i+1];
-      arr[i+1]=arr[i];
-      arr[i] = aux;
-    }
-  }
-  //Comparo si el segundo es menor al segundo en el caso de que haya switcheado arriba
-  if(arr[1] < arr[0]){
-      aux=arr[0];
-      arr[0]=arr[1];
-      arr[1] = aux;
-  }
+float mapFloat(int input, int min, int max, int minW, int maxW){
+  float res = (minW + (input / 1023.0)*(maxW - minW));
+  return res;
 }
