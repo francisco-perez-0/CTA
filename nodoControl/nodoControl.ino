@@ -35,7 +35,7 @@ int read4=0;
 
 double read1=0;
 
-int tension;
+unsigned long tension;
 int parteEnteraT;
 int parteFlotanteT;
 float convTension = 0;
@@ -121,18 +121,19 @@ void loop() {
   }
   // ------------------- Corriente -------------------
   corriente = analogRead(A0);
-  /*float corrienteAux = ((corriente*Vref)/1023); 
+  float corrienteAux = ((corriente*Vref)/1023); 
   convCorriente = funcionConversionCorriente(corrienteAux);
-  */
   parteEnteraC = (int)convCorriente;
   parteFlotanteC = (int)((convCorriente - parteEnteraC)*100);
+  //convCorriente = mapFloat(corriente, 0, 1023, 0, 50);
+  
   // ------------------- Tension -------------------
   tension = analogRead(A1); 
-  convCorriente = mapFloat(corriente, 0, 1023, 0, 50);
-
-  convTension = mapFloat(tension, 0, 1023, 0, 100);
-  parteEnteraT = (int)convTension;
-  parteFlotanteC = (int)((convTension - parteEnteraT)*100);
+  //convTension = mapFloat(tension, 0, 1023, 0, 100);
+  unsigned long ope = tension*1000;
+  unsigned long ope1 = ope/1013;
+  parteEnteraT = (int)ope1;
+  parteFlotanteC = (int)((ope1 - parteEnteraT)*100);
 
   //Envio trama de corriente
   tramaCorriente.data[0] = parteEnteraC;
