@@ -83,7 +83,7 @@ boolean mqttConnect(){
 }
 
 void setup() {
-  trama1.can_id = 222; 
+  trama1.can_id = 910; 
   trama1.can_dlc = 1;
   trama1.data[0] = 0x00;
   
@@ -155,9 +155,7 @@ void loop() {
     delay(100);
     return;
   }
-  if(cant > 1){
-    resetArduino();
-  }
+
   /*static unsigned long lastGPSRequest= 0;
   uint32_t requestGPSINFO = millis();
   if( requestGPSINFO - lastGPSRequest > 1000){

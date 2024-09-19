@@ -9,7 +9,7 @@
 #define pinTension A1
 
 #define sensibilidad 0.0125
-#define Vref 5
+#define Vref 5.0
 #define Vcero 2.5
 
 
@@ -19,10 +19,12 @@ unsigned long previousMillis = 0;
 MCP2515 mcp2515(10);
 struct can_frame trama1;
 struct can_frame tramaCorriente;
+struct can_frame tramaCorrienteN;
 struct can_frame tramaTension;
 struct can_frame canMsg;
 
 int i=0;
+int j=0;
 
 
 int estado=0; // Pin digital
@@ -35,19 +37,20 @@ int read4=0;
 
 double read1=0;
 
-unsigned long tension;
+long tension;
 int parteEnteraT;
 int parteFlotanteT;
 float convTension = 0;
 
 
-int corriente;
+long corriente;
 int parteEnteraC;
 int parteFlotanteC;
 float convCorriente = 0;
 
 
 int flag = 0;
+int flagNegativo=0;
 int val;
 
 int estadoRelayUno;
@@ -77,6 +80,11 @@ void setup() {
   tramaCorriente.data[0] = 0x00;
   tramaCorriente.data[1] = 0x00;
 
+  tramaCorrienteN.can_id = 879; 
+  tramaCorrienteN.can_dlc = 2;
+  tramaCorrienteN.data[0] = 0x00;
+  tramaCorrienteN.data[1] = 0x00;
+
   tramaTension.can_id = 890; 
   tramaTension.can_dlc = 2;
   tramaTension.data[0] = 0x00;
@@ -91,64 +99,80 @@ void setup() {
 
 void loop() {
   uint32_t t = millis();
-  if(i++ == 200){ //1 sg
+  if(flag){
     led = !led;
-    i=0;
     digitalWrite(3, led);
-    Serial.print("Estado corriente - "); 
-    Serial.print(corriente);
-    Serial.print(" | ");
-    Serial.print("Estado tension - "); 
-    Serial.println(tension);
     /*
     Serial.print("Estado pin 4 - ");
     val = digitalRead(4);
     Serial.println(val);
-
     Serial.print("Estado pin 5 - ");
     val = digitalRead(5);
     Serial.println(val);
-
     Serial.print("Estado pin 6 - ");
     val = digitalRead(6);
     Serial.println(val);
-    */
+    
     Serial.print("Conversion corriente ");
     Serial.print(parteEnteraC);
     Serial.print(" , ");
     Serial.print(parteFlotanteC);
-    Serial.println();
+    Serial.println();*/
+    flag=0;
   }
   // ------------------- Corriente -------------------
   corriente = analogRead(A0);
   float corrienteAux = ((corriente*Vref)/1023); 
   convCorriente = funcionConversionCorriente(corrienteAux);
+  if(convCorriente < 0){
+    flagNegativo = 1;
+    convCorriente*=-1;
+  }
   parteEnteraC = (int)convCorriente;
-  parteFlotanteC = (int)((convCorriente - parteEnteraC)*100);
+  parteFlotanteC = (int)((convCorriente - parteEnteraC) * 100); 
   //convCorriente = mapFloat(corriente, 0, 1023, 0, 50);
   
   // ------------------- Tension -------------------
   tension = analogRead(A1); 
   //convTension = mapFloat(tension, 0, 1023, 0, 100);
-  unsigned long ope = tension*1000;
-  unsigned long ope1 = ope/1013;
+  float ope = tension*100;
+  float ope1 = ope/1023;
   parteEnteraT = (int)ope1;
   parteFlotanteC = (int)((ope1 - parteEnteraT)*100);
 
-  //Envio trama de corriente
-  tramaCorriente.data[0] = parteEnteraC;
-  tramaCorriente.data[1] = parteFlotanteC;
-  //***************************
-  if (mcp2515.sendMessage(&tramaCorriente) == MCP2515::ERROR_OK);
-  else Serial.println("MsgCorriente TX error");
-  //**************************
+  if(flagNegativo == 0){
+    //Envio trama de corriente
+    tramaCorriente.data[0] = parteEnteraC;
+    tramaCorriente.data[1] = parteFlotanteC;
+    //***************************
+    if (mcp2515.sendMessage(&tramaCorriente) == MCP2515::ERROR_OK);
+    else {
+      Serial.println("MsgCorriente TX error");
+      flag=1;
+      }
+    //**************************
+  } else {
+    //Envio trama de corriente
+    tramaCorrienteN.data[0] = parteEnteraC;
+    tramaCorrienteN.data[1] = parteFlotanteC;
+    //***************************
+    if (mcp2515.sendMessage(&tramaCorrienteN) == MCP2515::ERROR_OK);
+    else{
+      Serial.println("MsgCorrienteN TX error");
+      flag=1;
+    } 
+    //**************************
+  }
 
    //Envio trama de tension
   tramaTension.data[0] = parteEnteraT;
   tramaTension.data[1] = parteFlotanteT;
   //***************************
   if (mcp2515.sendMessage(&tramaTension) == MCP2515::ERROR_OK);
-  else Serial.println("MsgTension TX error");
+  else {
+    flag=1;
+    Serial.println("MsgTension TX error");
+  }
   //**************************
 
   //Recibo de tramas de control 
@@ -193,7 +217,7 @@ void loop() {
     }
   }
 
-  
+  flagNegativo = 0;
   delay(5);
 }
 
