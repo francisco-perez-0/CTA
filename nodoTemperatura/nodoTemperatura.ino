@@ -83,7 +83,7 @@ void setup() {
 
 
   mcp2515.reset();
-  mcp2515.setBitrate(CAN_250KBPS, MCP_8MHZ);
+  mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   //aca decia 125 pero lo cambio a 250 que es la comun
   mcp2515.setNormalMode();
 

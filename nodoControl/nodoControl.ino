@@ -41,6 +41,7 @@ long tension;
 int parteEnteraT;
 int parteFlotanteT;
 float convTension = 0;
+float ope=0.0;
 
 
 long corriente;
@@ -80,11 +81,6 @@ void setup() {
   tramaCorriente.data[0] = 0x00;
   tramaCorriente.data[1] = 0x00;
 
-  tramaCorrienteN.can_id = 879; 
-  tramaCorrienteN.can_dlc = 2;
-  tramaCorrienteN.data[0] = 0x00;
-  tramaCorrienteN.data[1] = 0x00;
-
   tramaTension.can_id = 890; 
   tramaTension.can_dlc = 2;
   tramaTension.data[0] = 0x00;
@@ -92,7 +88,7 @@ void setup() {
 
 
   mcp2515.reset();
-  mcp2515.setBitrate(CAN_250KBPS, MCP_8MHZ);
+  mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   //aca decia 125 pero lo cambio a 250 que es la comun
   mcp2515.setNormalMode();
 }
@@ -128,52 +124,45 @@ void loop() {
     flagNegativo = 1;
     convCorriente*=-1;
   }
-  parteEnteraC = (int)convCorriente;
-  parteFlotanteC = (int)((convCorriente - parteEnteraC) * 100); 
+  parteEnteraC = convCorriente;
+  parteFlotanteC = (int)((convCorriente - parteEnteraC) * 100.0); 
   //convCorriente = mapFloat(corriente, 0, 1023, 0, 50);
   
   // ------------------- Tension -------------------
   tension = analogRead(A1); 
   //convTension = mapFloat(tension, 0, 1023, 0, 100);
-  float ope = tension*100;
-  float ope1 = ope/1023;
-  parteEnteraT = (int)ope1;
-  parteFlotanteC = (int)((ope1 - parteEnteraT)*100);
+  ope = (tension*100.0)/1023.0;
+  parteEnteraT = ope;
+  parteFlotanteT = (int)((ope - parteEnteraT)*100.0);
 
-  if(flagNegativo == 0){
-    //Envio trama de corriente
+
+  //Envio trama de corriente
+  if(i++ == 5){
+    i=0;
     tramaCorriente.data[0] = parteEnteraC;
     tramaCorriente.data[1] = parteFlotanteC;
     //***************************
     if (mcp2515.sendMessage(&tramaCorriente) == MCP2515::ERROR_OK);
-    else {
-      Serial.println("MsgCorriente TX error");
-      flag=1;
-      }
-    //**************************
-  } else {
-    //Envio trama de corriente
-    tramaCorrienteN.data[0] = parteEnteraC;
-    tramaCorrienteN.data[1] = parteFlotanteC;
-    //***************************
-    if (mcp2515.sendMessage(&tramaCorrienteN) == MCP2515::ERROR_OK);
     else{
-      Serial.println("MsgCorrienteN TX error");
+      Serial.println("MsgCorriente TX error");
       flag=1;
     } 
     //**************************
   }
-
-   //Envio trama de tension
-  tramaTension.data[0] = parteEnteraT;
-  tramaTension.data[1] = parteFlotanteT;
-  //***************************
-  if (mcp2515.sendMessage(&tramaTension) == MCP2515::ERROR_OK);
-  else {
-    flag=1;
-    Serial.println("MsgTension TX error");
+  
+  if(j++ == 100){
+    j=0;
+    //Envio trama de tension
+    tramaTension.data[0] = parteEnteraT;
+    tramaTension.data[1] = parteFlotanteT;
+    //***************************
+    if (mcp2515.sendMessage(&tramaTension) == MCP2515::ERROR_OK);
+    else {
+      flag=1;
+      Serial.println("MsgTension TX error");
+    }
+    //**************************
   }
-  //**************************
 
   //Recibo de tramas de control 
   if (mcp2515.readMessage(&trama1) == MCP2515::ERROR_OK) {
@@ -184,11 +173,11 @@ void loop() {
       Serial.print(trama1.can_dlc, HEX); // print DLC
       Serial.print(" ");
       switch (trama1.data[0]){
-        case 0x00:
+        case 00:
           digitalWrite(RELAY1, LOW);
           EEPROM.write(estadoRelayUno, 0);
           break;
-        case 0x11:
+        case 11:
           digitalWrite(RELAY1, HIGH);
           EEPROM.write(estadoRelayUno, 1);
           break;
@@ -218,7 +207,7 @@ void loop() {
   }
 
   flagNegativo = 0;
-  delay(5);
+  delay(1);
 }
 
 

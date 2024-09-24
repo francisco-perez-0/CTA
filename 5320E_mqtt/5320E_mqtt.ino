@@ -10,7 +10,7 @@ MCP2515 mcp2515(10);
 struct can_frame trama1;
 
 // APN
-const char apn[] = "datos.personal.com";
+const char apn[] = "datos.personal.com"; //"wap.gprs.unifon.com.ar";//
 
 // MQTT
 const char* broker = "test.mosquitto.org";
