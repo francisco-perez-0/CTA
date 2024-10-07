@@ -93,8 +93,7 @@ void setup() {
 
 void loop() {
 
-  led = !led;
-  digitalWrite(3, led);
+  
 
 
 ///////////////////Inicio de Conversión de valor////////////////////////////
@@ -116,7 +115,11 @@ for(int i=0; i<6; i++){
   trama1.data[5] = reads[5];
   //***************************
    if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else Serial.println("Msg1 TX error");
+   else {
+    led = !led;
+    digitalWrite(3, led);
+    Serial.println("Msg1 TX error");
+   }
   //**************************
 
   Serial.println();
@@ -194,7 +197,3 @@ void SortAsc(int* arr){
       arr[1] = aux;
   }
 }
-
-
-
-
