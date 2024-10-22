@@ -82,6 +82,7 @@ void  loop() {
   i7 = sentence.indexOf(',', i6+1);
   i8 = sentence.indexOf(',', i7+1);
   i9 = sentence.indexOf(',', i8+1);
+  //                                                             |         |
   //                                                             v = i7+1  v = i8
   // [<lat>],[<N/S>],[<log>],[<E/W>],[<date>],[<UTCtime>],[<alt>],[<speed>],[<course>]  
   speed = sentence.substring(i7+1, i8);
@@ -109,7 +110,3 @@ void  loop() {
    sentence = "";
 }
 }
-
-
-
-

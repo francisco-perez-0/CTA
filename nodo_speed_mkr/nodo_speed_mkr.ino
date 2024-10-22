@@ -51,6 +51,8 @@ while (ss.available() > 0) {
       //***************************
       if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK);
       }
-
+    
   }
+  delay(100);
+  
 }

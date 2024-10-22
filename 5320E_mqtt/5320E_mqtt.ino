@@ -230,7 +230,6 @@ void loop() {
   trama1.data[0] = vel.toInt();
    //***************************
   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK);
-
   //**************************
   sentence = "";
   mqtt.loop();
