@@ -43,6 +43,8 @@ int parteFlotanteT;
 float convTension = 0;
 float ope=0.0;
 
+float sumaTension=0;
+
 
 long corriente;
 int parteEnteraC;
@@ -119,7 +121,7 @@ void loop() {
   // ------------------- Corriente -------------------
   corriente = analogRead(A0);
   float corrienteAux = ((corriente*Vref)/1023); 
-  convCorriente = funcionConversionCorriente(corrienteAux);
+  convCorriente = (corrienteAux-2.50)*100.0;  //funcionConversionCorriente(corrienteAux);
   if(convCorriente < 0){
     flagNegativo = 1;
     convCorriente*=-1;
@@ -130,10 +132,13 @@ void loop() {
   
   // ------------------- Tension -------------------
   tension = analogRead(A1); 
-  //convTension = mapFloat(tension, 0, 1023, 0, 100);
-  ope = (tension*100.0)/1023.0;
-  parteEnteraT = ope;
-  parteFlotanteT = (int)((ope - parteEnteraT)*100.0);
+  ope = (tension*100.0)/1023.0; 
+  ope-=1;
+  sumaTension += ope;
+  
+  //parteEnteraT = ope;
+  //parteFlotanteT = (int)((ope - parteEnteraT)*100.0);
+
 
 
   //Envio trama de corriente
@@ -153,6 +158,11 @@ void loop() {
   if(j++ == 100){
     j=0;
     //Envio trama de tension
+    sumaTension/=100.0;
+    parteEnteraT = sumaTension;
+    parteFlotanteT = (int)((sumaTension - parteEnteraT)*100.0);
+    sumaTension=0.0;
+    parteEnteraT-=1;
     tramaTension.data[0] = parteEnteraT;
     tramaTension.data[1] = parteFlotanteT;
     //***************************
@@ -176,25 +186,31 @@ void loop() {
         case 00:
           digitalWrite(RELAY1, LOW);
           EEPROM.write(estadoRelayUno, 0);
+          Serial.println("Bajo relay 1");
           break;
-        case 11:
+        case 1:
           digitalWrite(RELAY1, HIGH);
           EEPROM.write(estadoRelayUno, 1);
+          Serial.println("Alto relay 1");
           break;
-        case 0x22:
+        case 2:
           digitalWrite(RELAY2 , LOW);
           EEPROM.write(estadoRelayDos, 0);
+          Serial.println("Bajo relay 2");
           break;
-        case 0x33:
+        case 3:
           digitalWrite(RELAY2, HIGH);
+          Serial.println("Alto relay 2");
           EEPROM.write(estadoRelayDos, 1);
           break;
         
       }
-      if(trama1.data[0] == 0x44){
+      if(trama1.data[0] == 4){
         digitalWrite(RELAY3, LOW);
+        Serial.println("Bajo relay 3");
         EEPROM.write(estadoRelayTres, 0);
-      } else if(trama1.data[0] == 0x55){
+      } else if(trama1.data[0] == 5){
+        Serial.println("Alto relay 3");
         digitalWrite(RELAY3, HIGH);
         EEPROM.write(estadoRelayTres, 1);
       }

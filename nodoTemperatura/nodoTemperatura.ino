@@ -71,7 +71,7 @@ void setup() {
 
 
   //**********************************
-  trama1.can_id = 550; 
+  trama1.can_id = 551; 
   trama1.can_dlc = 6;
   trama1.data[0] = 0x1E;
   trama1.data[1] = 0x28;
@@ -93,7 +93,8 @@ void setup() {
 
 void loop() {
 
-  
+  led = !led;
+  digitalWrite(3, led);
 
 
 ///////////////////Inicio de Conversión de valor////////////////////////////
@@ -115,11 +116,7 @@ for(int i=0; i<6; i++){
   trama1.data[5] = reads[5];
   //***************************
    if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else {
-    led = !led;
-    digitalWrite(3, led);
-    Serial.println("Msg1 TX error");
-   }
+   else Serial.println("Msg1 TX error");
   //**************************
 
   Serial.println();
