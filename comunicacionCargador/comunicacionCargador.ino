@@ -29,7 +29,7 @@ void setup() {
 void loop() {
   mcp2515.sendMessage(&canMsg1);
   //mcp2515.sendMessage(MCP2515::TXB1, &canMsg1); //en esta linea se esta aclarando qué buffer
-  //de transmicion se va a usar
+  //de transmision se va a usar
   
   if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
     if (canMsg.can_id == 0x98FF50E5){

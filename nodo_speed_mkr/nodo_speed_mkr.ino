@@ -25,7 +25,7 @@ void setup()
   tramaSpeed.data[0] = 0x00;
 
   mcp2515.reset();
-  mcp2515.setBitrate(CAN_250KBPS, MCP_8MHZ);
+  mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   mcp2515.setNormalMode();
   //aca decia 125 pero lo cambio a 250 que es la
 
@@ -33,7 +33,7 @@ void setup()
 
 
 void loop()
-{
+{  
 while (ss.available() > 0) {
     gps.encode(ss.read());
     // Velocidad en km/h
