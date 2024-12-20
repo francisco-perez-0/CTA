@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=NetPc2_1 Pin=Umux-13
+Removed Pin From Net: NetName=NetPterm2_2 Pin=Umux-14
+Added Pin To Net: NetName=NetPterm2_2 Pin=Umux-13
+Added Pin To Net: NetName=NetPc2_1 Pin=Umux-14

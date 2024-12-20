@@ -1,0 +1,6 @@
+Removed Pin From Net: NetName=NetPlcd_4 Pin=U328-14
+Removed Pin From Net: NetName=NetPlcd_6 Pin=U328-15
+Removed Pin From Net: NetName=NetPlcd_6 Pin=Umux-11
+Added Pin To Net: NetName=NetPlcd_6 Pin=U328-14
+Added Pin To Net: NetName=NetPlcd_4 Pin=U328-15
+Added Pin To Net: NetName=NetPlcd_4 Pin=Umux-11

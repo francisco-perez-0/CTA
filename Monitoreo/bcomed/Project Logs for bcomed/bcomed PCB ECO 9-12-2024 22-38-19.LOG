@@ -1,0 +1,3 @@
+Change Component Footprint: Designator=Pterm1 Old Footprint=HDR2X3 New Footprint=conector cable
+Change Component Footprint: Designator=Pterm2 Old Footprint=HDR2X3 New Footprint=conector cable
+Added Room: Name=bcomed

@@ -1,0 +1,4 @@
+Change Component Footprint: Designator=Y? Old Footprint=R38 New Footprint=Cristal
+Change Component Footprint: Designator=Cx1 Old Footprint=RAD-0.3 New Footprint=Cap4
+Change Component Footprint: Designator=Cx2 Old Footprint=RAD-0.3 New Footprint=Cap4
+Added Room: Name=bcomed

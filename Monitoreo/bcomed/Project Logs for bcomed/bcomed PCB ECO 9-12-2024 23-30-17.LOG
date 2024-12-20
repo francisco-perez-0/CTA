@@ -1,0 +1,9 @@
+Removed Pin From Net: NetName=NetPbor1_3 Pin=Prel1-1
+Removed Pin From Net: NetName=NetPbor1_2 Pin=Prel1-2
+Removed Pin From Net: NetName=NetPbor2_3 Pin=Prel2-1
+Removed Pin From Net: NetName=NetPbor2_2 Pin=Prel2-2
+Added Pin To Net: NetName=NetPbor1_2 Pin=Prel1-1
+Added Pin To Net: NetName=NetPbor1_3 Pin=Prel1-2
+Added Pin To Net: NetName=NetPbor2_2 Pin=Prel2-1
+Added Pin To Net: NetName=NetPbor2_3 Pin=Prel2-2
+Added Room: Name=bcomed

@@ -1,0 +1,5 @@
+Removed Pin From Net: NetName=NetPc2_1 Pin=Umux-5
+Removed Pin From Net: NetName=NetPres0_2 Pin=Umux-13
+Added Pin To Net: NetName=NetPres0_2 Pin=Umux-5
+Added Pin To Net: NetName=NetPc2_1 Pin=Umux-13
+Added Room: Name=bcomed
