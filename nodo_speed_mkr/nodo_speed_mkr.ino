@@ -13,13 +13,23 @@ char dato=' ';
 double metrosSegundos;
 int parteEntera;
 int parteDecimal;
+int ledRojo = 5;
+int ledVerde = 6;
+
+
+int errorLed = LOW;
+
 
 
 void setup()
 {
+
   Serial.begin(9600);            
   ss.begin(9600); 
 
+  pinMode(ledRojo, OUTPUT);
+  pinMode(ledVerde, OUTPUT);
+  digitalWrite(ledVerde, HIGH);
   tramaSpeed.can_id = 910; 
   tramaSpeed.can_dlc = 2;
   tramaSpeed.data[0] = 0x00;
@@ -34,6 +44,8 @@ void setup()
 
 void loop()
 {  
+  
+  
 while (ss.available() > 0) {
     gps.encode(ss.read());
     // Velocidad en km/h
@@ -49,8 +61,12 @@ while (ss.available() > 0) {
       tramaSpeed.data[0] = parteEntera;
       tramaSpeed.data[1] = parteDecimal;
       //***************************
-      if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK);
+      if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
+        digitalWrite(ledRojo, LOW);
+      } else {
+        digitalWrite(ledRojo, HIGH);
       }
+      } 
     
   }
   delay(100);

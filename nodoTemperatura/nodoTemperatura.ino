@@ -4,7 +4,18 @@
 
 #include <math.h>
 #include <mcp2515.h>
+#include <SoftwareSerial.h>
+#include <TinyGPS++.h>
+SoftwareSerial ss(3,4);
 
+TinyGPSPlus gps;
+char dato=' ';
+
+double metrosSegundos;
+int parteEntera;
+int parteDecimal;
+int ledRojo = 5;
+int ledVerde = 6;
 
 int pins[6] = {A0, A1, A2, A3, A4, A5};
 
@@ -16,6 +27,8 @@ int estado=0; // Pin digital
 
 int reads [6];
 
+const long interval = 100;
+unsigned long tiempoPrevio = 0;
 int read2=0;
 int read3=0;
 int read4=0;
@@ -51,7 +64,7 @@ double logtem=0;
 MCP2515 mcp2515(10);
 struct can_frame trama1;
 struct can_frame canMsg;
-
+struct can_frame tramaSpeed;
 
 double read1=0;
 
@@ -63,12 +76,9 @@ void setup() {
   pinMode (A3, INPUT);
   pinMode (A4, INPUT);
   pinMode (A5, INPUT);
-
-  pinMode(3, OUTPUT);
   //analogReference(EXTERNAL);
-
-  Serial.begin(9600);
-
+  //Serial.begin(9600);
+  ss.begin(9600); 
 
   //**********************************
   trama1.can_id = 551; 
@@ -80,80 +90,67 @@ void setup() {
   trama1.data[4] = 0x46;
   trama1.data[5] = 0x50;
 
-
+  tramaSpeed.can_id = 910; 
+  tramaSpeed.can_dlc = 2;
+  tramaSpeed.data[0] = 0x00;
 
   mcp2515.reset();
   mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   //aca decia 125 pero lo cambio a 250 que es la comun
   mcp2515.setNormalMode();
-
   //**********************************
-
 }
 
 void loop() {
-
-  led = !led;
-  digitalWrite(3, led);
-
-
+  unsigned long tiempoActual = millis();
 ///////////////////Inicio de Conversión de valor////////////////////////////
-for(int i=0; i<6; i++){
-  xin = analogRead(pins[i]);
-  reads[i]= (int)steinh(xin);
-  Serial.print("| Pin: ");
-  Serial.print(pins[i]);
-  Serial.print(" valor leido: ");
-  Serial.print(reads[i]);
-  Serial.print(" | ----- ");
+
+if(tiempoActual - tiempoPrevio >= interval){
+  tiempoPrevio = tiempoActual;
+  for(int i=0; i<6; i++){
+    xin = analogRead(pins[i]);
+    reads[i]= (int)steinh(xin);
+    //Serial.print("| Pin: ");
+    //Serial.print(pins[i]);
+    //Serial.print(" valor leido: ");
+    //Serial.print(reads[i]);
+    //Serial.print(" | ----- ");
+  }
+
+  /////////////////////Fin de Conversión de valor/////////////////////////////
+    trama1.data[0] = reads[0];
+    trama1.data[1] = reads[1];
+    trama1.data[2] = reads[2];
+    trama1.data[3] = reads[3];
+    trama1.data[4] = reads[4];
+    trama1.data[5] = reads[5];
+    //***************************
+    if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK);
+    //**************************
 }
-/////////////////////Fin de Conversión de valor/////////////////////////////
-  trama1.data[0] = reads[0];
-  trama1.data[1] = reads[1];
-  trama1.data[2] = reads[2];
-  trama1.data[3] = reads[3];
-  trama1.data[4] = reads[4];
-  trama1.data[5] = reads[5];
-  //***************************
-   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else Serial.println("Msg1 TX error");
-  //**************************
-
-  Serial.println();
-
-/*
-Serial.println();
-Serial.print("La mediana es: ");
-Serial.println(arregloLecturas[1]);
-*/
-  /*Serial.print("El valor de punto flotante es: ");
-  Serial.println(read1);
-  Serial.print("El valor entero sin decimales de A0 es: ");
-  Serial.println(read2);
-  Serial.print("El valor entero sin decimales de A1 es: ");
-  Serial.println(read3);
-  Serial.print("El valor entero sin decimales de A2 es: ");
-  Serial.println(read4);
-
-  Serial.print("El estado del pin 7 es: ");
-  Serial.println(estado);*/
-
-  if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
-      if(canMsg.can_id == 0x123){
-        Serial.println("Mensaje recibido");
-        Serial.print(canMsg.can_id, HEX); // print ID
-        Serial.print(" "); 
-        Serial.print(canMsg.can_dlc, HEX); // print DLC
-        Serial.print(" ");
-        for (int i = 0; i<canMsg.can_dlc; i++)  {  // print the data
-          Serial.print(canMsg.data[i],HEX);
-          Serial.print(" ");
-        }
-        Serial.println();      
+  while(ss.available() > 0) {
+    gps.encode(ss.read());
+    // Velocidad en km/h
+    if (gps.speed.isUpdated()) {
+      metrosSegundos = gps.speed.kmph();
+      //Serial.print("Velocidad (m/s): ");
+      metrosSegundos*=0.2778;
+      parteEntera = metrosSegundos;
+      parteDecimal = (int)((metrosSegundos - parteEntera)*100);
+      //Serial.print(parteEntera);
+      //Serial.print(".");
+      //Serial.println(parteDecimal);
+      tramaSpeed.data[0] = parteEntera;
+      tramaSpeed.data[1] = parteDecimal;
+      //***************************
+      if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
+        digitalWrite(ledRojo, LOW);
+      } else {
+        digitalWrite(ledRojo, HIGH);
       }
-    }
-   
-  delay (1000);
+      } 
+    
+  }
   
 }
 
