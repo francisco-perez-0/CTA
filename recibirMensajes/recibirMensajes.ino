@@ -22,14 +22,14 @@ void setup() {
   trama1.data[5] = 0x50;
 
   mcp2515.reset();
-  mcp2515.setBitrate(CAN_250KBPS, MCP_8MHZ);
+  mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   mcp2515.setNormalMode();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if (mcp2515.readMessage(&trama1) == MCP2515::ERROR_OK) {
-      if(trama1.can_id == 0x123){
+    if(trama1.can_id == 910){
         Serial.println("Mensaje recibido");
         Serial.print(trama1.can_id, HEX); // print ID
         Serial.print(" "); 
@@ -41,11 +41,6 @@ void loop() {
         }
         Serial.println();      
       }
-    }
-
-      //***************************
-   if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK) Serial.println("Messages sent");
-   else Serial.println("Msg1 TX error");
-  //**************************
+  }
 
 }
