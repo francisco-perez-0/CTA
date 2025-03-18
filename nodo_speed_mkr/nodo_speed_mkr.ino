@@ -35,7 +35,6 @@ void setup()
 
   avg.begin();
   attachInterrupt(digitalPinToInterrupt(hallPin), Counter, FALLING);
-
   pinMode(ledRojo, OUTPUT);
   pinMode(ledVerde, OUTPUT);
   digitalWrite(ledVerde, HIGH);

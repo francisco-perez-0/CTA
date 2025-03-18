@@ -119,7 +119,8 @@ void setup() {
 }
 
 void loop() {
-  //unsigned long tiempoActual = milliinterrupts();
+  //unsigned long tiempoActual = milli
+  interrupts();
   if(counterDelaySpeed++ == 500){
     //tiempoPrevioSpeed = tiempoActualSpeed;
     counterDelaySpeed = 0;
