@@ -143,7 +143,7 @@ void loop() {
       digitalWrite(ledRojo, HIGH);
     }
     contador = 0;
-  }s();
+  };
   //unsigned long tiempoActualSpeed = millis();
 ///////////////////Inicio de Conversión de valor////////////////////////////
   
