@@ -119,10 +119,7 @@ void setup() {
 }
 
 void loop() {
-  //unsigned long tiempoActual = millis();
-  //unsigned long tiempoActualSpeed = millis();
-///////////////////Inicio de Conversión de valor////////////////////////////
-  interrupts();
+  //unsigned long tiempoActual = milliinterrupts();
   if(counterDelaySpeed++ == 500){
     //tiempoPrevioSpeed = tiempoActualSpeed;
     counterDelaySpeed = 0;
@@ -145,7 +142,10 @@ void loop() {
       digitalWrite(ledRojo, HIGH);
     }
     contador = 0;
-  }
+  }s();
+  //unsigned long tiempoActualSpeed = millis();
+///////////////////Inicio de Conversión de valor////////////////////////////
+  
 
 if(counterDelayTemp == 100){
   counterDelayTemp = 0;

@@ -21,7 +21,7 @@ volatile int contador=0;
 double radio=0.3;
 double rpm;
 double speed;
-int promedio;
+double promedio;
 int intervalSpeed = 500;
 int tiempoPrevioSpeed=0;
 int counterDelaySpeed = 0;
@@ -64,8 +64,11 @@ void loop()
     //Serial.print("speed: ");
     //Serial.println(speed);
     promedio = avg.getAvg();
+    int entero = promedio;
+    int decimal = (promedio-entero)*100;
     //parteDecimal = (int)((metrosSegundos - parteEntera)*100);
-    tramaSpeed.data[0] = speed;
+    tramaSpeed.data[0] = entero;
+    tramaSpeed.data[1] = decimal;
     //***************************
     if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
       digitalWrite(ledRojo, LOW);
