@@ -5,17 +5,31 @@
 #include <math.h>
 #include <mcp2515.h>
 #include <SoftwareSerial.h>
-#include <TinyGPS++.h>
-SoftwareSerial ss(3,4);
 
-TinyGPSPlus gps;
+
+#include <movingAvg.h>
+
+movingAvg avg(5);
+
 char dato=' ';
+
+int hallPin = 3;
+volatile int contador=0;
+double radio=0.3;
+double rpm;
+double speed;
+int promedio;
+int intervalSpeed = 500;
+int tiempoPrevioSpeed=0;
 
 double metrosSegundos;
 int parteEntera;
 int parteDecimal;
 int ledRojo = 5;
 int ledVerde = 6;
+
+int counterDelaySpeed = 0;
+int counterDelayTemp = 0;
 
 int pins[6] = {A0, A1, A2, A3, A4, A5};
 
@@ -78,9 +92,10 @@ void setup() {
   pinMode (A5, INPUT);
   //analogReference(EXTERNAL);
   //Serial.begin(9600);
-  ss.begin(9600); 
-  //Serial.begin(9600);
 
+
+  avg.begin();
+  attachInterrupt(digitalPinToInterrupt(hallPin), Counter, FALLING);
   //**********************************
   trama1.can_id = 551; 
   trama1.can_dlc = 6;
@@ -99,15 +114,38 @@ void setup() {
   mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   //aca decia 125 pero lo cambio a 250 que es la comun
   mcp2515.setNormalMode();
+  delay(1000);
   //**********************************
 }
 
 void loop() {
-  unsigned long tiempoActual = millis();
+  //unsigned long tiempoActual = millis();
+  //unsigned long tiempoActualSpeed = millis();
 ///////////////////Inicio de Conversión de valor////////////////////////////
+  interrupts();
+  if(counterDelaySpeed++ == 500){
+    //tiempoPrevioSpeed = tiempoActualSpeed;
+    counterDelaySpeed = 0;
+    noInterrupts();
+    rpm=(contador*60.0)/0.5;
+    speed = (rpm*M_PI*radio*2.0)/60.0;
+    avg.reading(speed);
+    //Serial.print("speed: ");
+    //Serial.println(speed);
+    promedio = avg.getAvg();
+    //parteDecimal = (int)((metrosSegundos - parteEntera)*100);
+    tramaSpeed.data[0] = speed;
+    //***************************
+    if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
+      digitalWrite(ledRojo, LOW);
+    } else {
+      digitalWrite(ledRojo, HIGH);
+    }
+    contador = 0;
+  }
 
-if(tiempoActual - tiempoPrevio >= interval){
-  tiempoPrevio = tiempoActual;
+if(counterDelayTemp == 100){
+  counterDelayTemp = 0;
   for(int i=0; i<6; i++){
     xin = analogRead(pins[i]);
     reads[i]= (int)steinh(xin);
@@ -117,7 +155,6 @@ if(tiempoActual - tiempoPrevio >= interval){
     //Serial.print(reads[i]);
     //Serial.print(" | ----- ");
   }
-
   /////////////////////Fin de Conversión de valor/////////////////////////////
     trama1.data[0] = reads[0];
     trama1.data[1] = reads[1];
@@ -127,31 +164,11 @@ if(tiempoActual - tiempoPrevio >= interval){
     trama1.data[5] = reads[5];
     //***************************
     if (mcp2515.sendMessage(&trama1) == MCP2515::ERROR_OK);
+
+  
     //**************************
-}
-  while(ss.available() > 0) {
-    gps.encode(ss.read());
-    // Velocidad en km/h
-    if (gps.speed.isUpdated()) {
-      metrosSegundos = gps.speed.kmph();
-      //Serial.print("Velocidad (m/s): ");
-      metrosSegundos*=0.2778;
-      parteEntera = metrosSegundos;
-      parteDecimal = (int)((metrosSegundos - parteEntera)*100);
-      //Serial.print(parteEntera);
-      //Serial.print(".");
-      //Serial.println(parteDecimal);
-      tramaSpeed.data[0] = parteEntera;
-      tramaSpeed.data[1] = parteDecimal;
-      //***************************
-      if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
-        digitalWrite(ledRojo, LOW);
-      } else {
-        digitalWrite(ledRojo, HIGH);
-      }
-      } 
-    
   }
+  delay(1);
   
 }
 
@@ -191,4 +208,7 @@ void SortAsc(int* arr){
       arr[0]=arr[1];
       arr[1] = aux;
   }
+}
+void Counter() {
+  contador++;
 }

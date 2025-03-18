@@ -1,14 +1,11 @@
 #include <SoftwareSerial.h>
-#include <TinyGPS++.h>
 #include <mcp2515.h>
-SoftwareSerial ss(3,4);
+#include <movingAvg.h>
 
 // CAN
 MCP2515 mcp2515(10);
 struct can_frame tramaSpeed;
 
-TinyGPSPlus gps;
-char dato=' ';
 
 double metrosSegundos;
 int parteEntera;
@@ -17,6 +14,18 @@ int ledRojo = 5;
 int ledVerde = 6;
 
 
+// HALL
+movingAvg avg(5);
+int hallPin = 3;
+volatile int contador=0;
+double radio=0.3;
+double rpm;
+double speed;
+int promedio;
+int intervalSpeed = 500;
+int tiempoPrevioSpeed=0;
+int counterDelaySpeed = 0;
+
 int errorLed = LOW;
 
 
@@ -24,8 +33,8 @@ int errorLed = LOW;
 void setup()
 {
 
-  Serial.begin(9600);            
-  ss.begin(9600); 
+  avg.begin();
+  attachInterrupt(digitalPinToInterrupt(hallPin), Counter, FALLING);
 
   pinMode(ledRojo, OUTPUT);
   pinMode(ledVerde, OUTPUT);
@@ -33,7 +42,6 @@ void setup()
   tramaSpeed.can_id = 910; 
   tramaSpeed.can_dlc = 2;
   tramaSpeed.data[0] = 0x00;
-
   mcp2515.reset();
   mcp2515.setBitrate(CAN_250KBPS, MCP_16MHZ);
   mcp2515.setNormalMode();
@@ -45,30 +53,32 @@ void setup()
 void loop()
 {  
   
-  
-while (ss.available() > 0) {
-    gps.encode(ss.read());
-    // Velocidad en km/h
-    if (gps.speed.isUpdated()) {
-      metrosSegundos = gps.speed.kmph();
-      Serial.print("Velocidad (m/s): ");
-      metrosSegundos*=0.2778;
-      parteEntera = metrosSegundos;
-      parteDecimal = (int)((metrosSegundos - parteEntera)*100);
-      Serial.print(parteEntera);
-      Serial.print(".");
-      Serial.println(parteDecimal);
-      tramaSpeed.data[0] = parteEntera;
-      tramaSpeed.data[1] = parteDecimal;
-      //***************************
-      if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
-        digitalWrite(ledRojo, LOW);
-      } else {
-        digitalWrite(ledRojo, HIGH);
-      }
-      } 
-    
+  interrupts();
+  if(counterDelaySpeed++ == 500){
+    //tiempoPrevioSpeed = tiempoActualSpeed;
+    counterDelaySpeed = 0;
+    noInterrupts();
+    rpm=(contador*60.0)/0.5;
+    speed = (rpm*M_PI*radio*2.0)/60.0;
+    avg.reading(speed);
+    //Serial.print("speed: ");
+    //Serial.println(speed);
+    promedio = avg.getAvg();
+    //parteDecimal = (int)((metrosSegundos - parteEntera)*100);
+    tramaSpeed.data[0] = speed;
+    //***************************
+    if (mcp2515.sendMessage(&tramaSpeed) == MCP2515::ERROR_OK){
+      digitalWrite(ledRojo, LOW);
+    } else {
+      digitalWrite(ledRojo, HIGH);
+    }
+    contador = 0;
   }
-  delay(100);
+
+
+  delay(1);
   
+}
+void Counter() {
+  contador++;
 }
