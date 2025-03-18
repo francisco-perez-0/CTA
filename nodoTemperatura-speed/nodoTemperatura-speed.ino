@@ -147,7 +147,7 @@ void loop() {
 ///////////////////Inicio de Conversión de valor////////////////////////////
   
 
-if(counterDelayTemp == 100){
+if(counterDelayTemp++ == 100){
   counterDelayTemp = 0;
   for(int i=0; i<6; i++){
     xin = analogRead(pins[i]);
