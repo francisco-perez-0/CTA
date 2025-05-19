@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="480.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ar.edu.unlp.ing.cta.dashboard.controller.MainMenuController">
+   <left>
+      <VBox fx:id="sidebar_menu" alignment="BOTTOM_LEFT" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefHeight="480.0" prefWidth="150.0" styleClass="menuBar" BorderPane.alignment="BOTTOM_LEFT">
+         <children>
+            <RadioButton fx:id="driver_dashboard_button" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <graphic>
+                  <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="51.0" prefWidth="64.0" styleClass="tachometer-alt-solid-icon" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="menuButton" />
+                  <String fx:value="toggle-button" />
+               </styleClass></RadioButton>
+            <Separator prefWidth="150.0" VBox.vgrow="NEVER">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Separator>
+            <RadioButton fx:id="engineering_button" disable="true" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <graphic>
+                  <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="51.0" prefWidth="64.0" styleClass="chart-bar-regular-icon" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="menuButton" />
+                  <String fx:value="toggle-button" />
+               </styleClass></RadioButton>
+            <Separator prefWidth="150.0" VBox.vgrow="NEVER">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin></Separator>
+            <RadioButton fx:id="settings_button" disable="true" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <graphic>
+                  <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="51.0" prefWidth="64.0" styleClass="cogs-solid-icon" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="menuButton" />
+                  <String fx:value="toggle-button" />
+               </styleClass></RadioButton>
+            <Separator prefWidth="150.0" VBox.vgrow="NEVER">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin></Separator>
+            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="150.0" VBox.vgrow="NEVER">
+               <children>
+                  <Button fx:id="admin_button" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSignIn" prefWidth="130.0" styleClass="baseButton" text="Admin" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font name="Roboto Light" size="16.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Button>
+                  <HBox>
+                     <children>
+                        <Pane HBox.hgrow="ALWAYS">
+                           <children>
+                              <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Conexión" textOrigin="TOP">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </Pane>
+                        <Button fx:id="connection_retry_button" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRetryConnection" prefHeight="30.0" prefWidth="30.0" styleClass="roundButton" text="Reintentar">
+                           <graphic>
+                              <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="20.0" styleClass="redo-alt-solid-icon" />
+                           </graphic></Button>
+                     </children>
+                  </HBox>
+                  <HBox>
+                     <children>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" prefWidth="45.0">
+                           <children>
+                              <Label fx:id="db_icon" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="24.0" styleClass="database-solid-icon" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Label fx:id="db_status" alignment="CENTER" cacheShape="false" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="30.0" styleClass="round-icon" textAlignment="CENTER" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                 <graphic>
+                                    <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="16.0" prefWidth="20.0" styleClass="check-solid-icon" />
+                                 </graphic>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" prefWidth="45.0">
+                           <children>
+                              <Label fx:id="bms_icon" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="24.0" styleClass="microchip-solid-icon" textAlignment="CENTER" textFill="WHITE" />
+                              <Label fx:id="bms_status" alignment="CENTER" cacheShape="false" contentDisplay="CENTER" graphicTextGap="0.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="30.0" styleClass="round-icon" textAlignment="CENTER" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                 <graphic>
+                                    <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="20.0" styleClass="sync-alt-solid-icon" />
+                                 </graphic>
+                              </Label>
+                           </children></AnchorPane>
+                     </children>
+                  </HBox>
+               </children>
+               <styleClass>
+                  <String fx:value="baseTile" />
+                  <String fx:value="squareTile" />
+               </styleClass>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+</BorderPane>

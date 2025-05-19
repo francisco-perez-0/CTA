@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: dashboard
+Implementation-Version: 0.0.1
+Main-Class: ar.edu.unlp.ing.cta.dashboard.Main
+

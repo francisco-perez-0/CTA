@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="480.0" prefWidth="650.0" style="-fx-background-color: #30333a;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ar.edu.unlp.ing.cta.dashboard.controller.DashboardController">
+   <center>
+      <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="186.0" />
+          <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="186.0" />
+            <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="186.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="124.0" vgrow="NEVER" />
+          <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+          <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="124.0" vgrow="NEVER" />
+        </rowConstraints>
+         <children>
+            <VBox styleClass="baseTile">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Batería">
+                     <font>
+                        <Font name="Roboto Light" size="30.0" />
+                     </font>
+                  </Text>
+                  <HBox alignment="BASELINE_RIGHT">
+                     <children>
+                        <Text fx:id="value_battery_voltage" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-">
+                           <font>
+                              <Font name="Roboto Light" size="40.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text=" V">
+                           <font>
+                              <Font name="Roboto Light" size="40.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1">
+               <children>
+                  <Pane fx:id="placeholder_battery_meter" prefHeight="200.0" prefWidth="186.0" style="-fx-background-color: red;" />
+               </children>
+               <styleClass>
+                  <String fx:value="baseTile" />
+                  <String fx:value="batteryTile" />
+               </styleClass>
+            </StackPane>
+            <VBox styleClass="baseTile" GridPane.columnIndex="2">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Autonomía">
+                     <font>
+                        <Font name="Roboto Light" size="30.0" />
+                     </font>
+                  </Text>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox alignment="BASELINE_RIGHT" spacing="5.0">
+                           <children>
+                              <Text fx:id="value_hours_autonomy" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                              <Text fx:id="label_autonomy_unit" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text=" H">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                              <Text fx:id="value_minutes_autonomy" fill="WHITE" layoutX="120.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                              <Text fx:id="label_autonomy_unit2" fill="WHITE" layoutX="120.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="min">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </HBox>
+                        <HBox alignment="BASELINE_RIGHT" layoutX="10.0" layoutY="10.0">
+                           <children>
+                              <Text fx:id="value_km_autonomy" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                              <Text fx:id="label_autonomy_unit1" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text=" Km">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox styleClass="baseTile" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+               <children>
+                  <StackPane fx:id="container_speed_meter" VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox alignment="TOP_RIGHT" StackPane.alignment="TOP_LEFT">
+                           <children>
+                              <Text fx:id="value_secondary_speed" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-">
+                                 <font>
+                                    <Font size="30.0" />
+                                 </font>
+                              </Text>
+                              <Text fx:id="label_secondary_speed_unit" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="m/s">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </VBox>
+                     </children>
+                  </StackPane>
+               </children>
+            </VBox>
+            <VBox fx:id="container_current_meter" alignment="CENTER_LEFT" fillWidth="false" styleClass="baseTile" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS" />
+            <VBox alignment="CENTER_RIGHT" styleClass="baseTile" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <HBox alignment="BASELINE_RIGHT" spacing="5.0">
+                     <children>
+                        <Text fx:id="value_partialkm" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="000">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="km">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <HBox alignment="BASELINE_RIGHT" layoutX="20.0" layoutY="25.0" spacing="5.0">
+                     <children>
+                        <Text fx:id="value_totalkm" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="00000">
+                           <font>
+                              <Font size="40.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="km">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="200.0" styleClass="baseTile" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <children>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Region fx:id="keyIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="1">
+                           <styleClass>
+                              <String fx:value="key-solid-icon" />
+                              <String fx:value="indicator-icon-on" />
+                           </styleClass>
+                        </Region>
+                        <Region fx:id="plugIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="24.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <styleClass>
+                              <String fx:value="plug-solid-icon" />
+                              <String fx:value="indicator-icon-off" />
+                           </styleClass>
+                        </Region>
+                        <Region fx:id="batteryFullIndicator" layoutX="93.0" layoutY="13.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="36.0">
+                           <styleClass>
+                              <String fx:value="battery-full-solid-icon" />
+                              <String fx:value="indicator-icon-off" />
+                           </styleClass>
+                        </Region>
+                        <Region fx:id="batteryEmptyIndicator" layoutX="10.0" layoutY="13.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="36.0" GridPane.rowIndex="1">
+                           <styleClass>
+                              <String fx:value="battery-empty-solid-icon" />
+                              <String fx:value="indicator-icon-off" />
+                           </styleClass>
+                        </Region>
+                     </children>
+                  </GridPane>
+                  <VBox prefHeight="200.0" prefWidth="100.0" visible="false">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Corriente">
+                           <font>
+                              <Font name="Roboto Light" size="30.0" />
+                           </font>
+                        </Text>
+                        <HBox alignment="BASELINE_RIGHT">
+                           <children>
+                              <Text fx:id="value_current" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="N/A">
+                                 <font>
+                                    <Font name="Roboto Light" size="40.0" />
+                                 </font>
+                              </Text>
+                              <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text=" A">
+                                 <font>
+                                    <Font name="Roboto Light" size="40.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </GridPane>
+   </center>
+</BorderPane>

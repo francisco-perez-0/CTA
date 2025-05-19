@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <VBox alignment="TOP_CENTER" fillWidth="false" spacing="10.0" styleClass="tile">
+         <children>
+            <GridPane vgap="10.0">
+              <columnConstraints>
+                <ColumnConstraints halignment="CENTER" maxWidth="435.0" minWidth="10.0" />
+                <ColumnConstraints maxWidth="249.0" minWidth="10.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints fillHeight="false" maxHeight="-Infinity" minHeight="-Infinity" valignment="CENTER" />
+              </rowConstraints>
+               <children>
+                  <VBox GridPane.columnIndex="1">
+                     <children>
+                        <ToggleButton fx:id="toggleShowButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleToggleShowButton" prefHeight="30.0" prefWidth="36.0" textFill="WHITE">
+                           <font>
+                              <Font name="Roboto Light" size="15.0" />
+                           </font>
+                           <graphic>
+                              <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="30.0" styleClass="eye-icon" />
+                           </graphic>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ToggleButton>
+                     </children>
+                  </VBox>
+                  <AnchorPane fx:id="passwordFieldContainer">
+                     <children>
+                        <PasswordField fx:id="passwordHiddenField" promptText="Ingrese la contraseña">
+                           <font>
+                              <Font name="Roboto Light" size="15.0" />
+                           </font>
+                        </PasswordField>
+                        <TextField fx:id="passwordShownField" promptText="Ingrese la contraseña">
+                           <font>
+                              <Font name="Roboto Light" size="15.0" />
+                           </font>
+                        </TextField>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+   </content>
+</DialogPane>
